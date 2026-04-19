@@ -1,6 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/lib/auth";
-import { BarChart3, LayoutDashboard, ListPlus, LogOut, Activity } from "lucide-react";
+import { BarChart3, LayoutDashboard, ListPlus, LogOut, BrainCircuit } from "lucide-react";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
@@ -9,7 +9,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const navItems = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { name: "Bets", href: "/bets", icon: ListPlus },
-    { name: "Insights", href: "/insights", icon: Activity },
+    { name: "Coach", href: "/insights", icon: BrainCircuit },
   ];
 
   return (
