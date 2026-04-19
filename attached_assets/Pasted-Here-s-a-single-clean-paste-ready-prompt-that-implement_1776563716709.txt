@@ -1,0 +1,194 @@
+Here’s a single clean, paste-ready prompt that implements everything from the next step plan (without breaking your backend or overcomplicating the system):
+
+⸻
+
+🚀 BETPULSE — RETENTION + BEHAVIORAL LOOP UPGRADE PROMPT
+
+Enhance the existing BetPulse frontend and AI coaching layer WITHOUT changing any backend logic, database structure, authentication system, or AI calculation engine.
+
+The goal is to transform the app into a daily habit-driven behavioral tracking system that users return to every day to understand changes in their betting behavior.
+
+⸻
+
+🎯 CORE OBJECTIVE
+
+Increase user retention by adding:
+
+* daily change awareness
+* progression system
+* behavior cause/effect explanations
+* action-driven coaching
+* return triggers
+
+The app should feel like a daily performance check-in system, not a static dashboard.
+
+⸻
+
+📊 1. ADD “DAILY CHANGE SNAPSHOT” (VERY IMPORTANT)
+
+Add a new dashboard section at the top called:
+
+DAILY CHANGE SNAPSHOT
+
+Show comparisons vs previous session:
+
+* Profit/Loss today vs last session (↑ / ↓)
+* Bankroll change since last visit
+* Risk score change (increase or decrease)
+* Win rate trend change
+* Streak change
+
+Use clear color indicators:
+
+* green = improvement
+* red = decline
+* gray = neutral
+
+This section should be visually prominent and immediately readable.
+
+⸻
+
+🧠 2. ADD USER PROGRESSION SYSTEM
+
+Introduce a simple behavioral level system:
+
+LEVELS:
+
+* Beginner
+* Learning
+* Controlled
+* Disciplined
+* Sharp
+* Elite
+
+LOGIC:
+
+Based on:
+
+* bankroll discipline score
+* risk score consistency
+* win rate stability
+
+UI REQUIREMENTS:
+
+* show level under user stats
+* include progress bar toward next level
+* show percentage progress (e.g. “68% to Disciplined”)
+
+⸻
+
+🧠 3. UPGRADE AI COACH TO “CAUSE → EFFECT MODEL”
+
+Redesign AI insight output structure WITHOUT changing backend logic.
+
+NEW FORMAT:
+
+1. What Changed Today
+
+* simple summary of behavior shift
+
+2. Why It Changed
+
+* explanation of metric movement
+
+3. Behavioral Cause
+
+* direct cause of issue (e.g. stake increase after loss)
+
+Example tone:
+“You increased stake size after 2 consecutive losses, which caused your risk score to rise.”
+
+Keep tone strict, analytical, and coach-like.
+
+⸻
+
+⚡ 4. ADD “ONE ACTION RECOMMENDATION”
+
+At the bottom of AI Coach panel, always display ONE recommended action:
+
+Examples:
+
+* “Reduce stake size by 25% today”
+* “Do not bet for 24 hours to reset tilt behavior”
+* “Keep all bets under flat stake for next 5 plays”
+
+This must be:
+
+* simple
+* direct
+* behavioral (not advice or picks)
+
+⸻
+
+🔁 5. ADD RETURN HOOK BANNER (HABIT LOOP)
+
+Add a small banner at top of dashboard:
+
+“Since your last visit:”
+
+* number of bets placed
+* bankroll change
+* risk level change
+
+This must create curiosity and urgency to return daily.
+
+⸻
+
+📈 6. ADD WIN / LOSS REINFORCEMENT SYSTEM
+
+When user is winning:
+
+* “Your discipline is building consistent profitability”
+* “You are improving behavioral control”
+
+When user is losing:
+
+* “You are currently in a negative decision cycle”
+* “Emotional betting behavior detected”
+
+Keep tone neutral, not overly emotional.
+
+⸻
+
+🎨 UI REQUIREMENTS
+
+* Keep dark fintech theme
+* Use neon green for improvement
+* Use red for decline
+* Clean card spacing
+* Strong hierarchy (stats → behavior → actions)
+* Mobile responsive
+
+⸻
+
+🚫 DO NOT CHANGE
+
+* backend logic
+* authentication system
+* database structure
+* AI calculation engine
+* existing bet or bankroll logic
+
+⸻
+
+🎯 FINAL PRODUCT GOAL
+
+After this update, BetPulse should function as:
+
+A daily behavioral coaching system that shows users how their betting decisions are changing over time and forces them to confront their patterns through clear feedback and action steps.
+
+NOT:
+
+* betting tips system
+* prediction engine
+* sportsbook tool
+
+⸻
+
+🔥 SUCCESS CRITERIA
+
+* users understand “what changed since yesterday” instantly
+* users feel compelled to return daily
+* AI feels like a strict performance coach
+* app creates behavior awareness, not just data display
+* dashboard tells a continuous story of improvement or decline

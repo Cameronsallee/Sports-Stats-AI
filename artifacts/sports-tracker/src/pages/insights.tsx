@@ -2,17 +2,22 @@ import { useGetInsights, getGetInsightsQueryKey } from "@workspace/api-client-re
 import { useAuth } from "@/lib/auth";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Brain, AlertTriangle, AlertOctagon, TrendingDown, Target, Lightbulb, Activity, ShieldCheck, ShieldAlert, ShieldX } from "lucide-react";
+import {
+  Brain, AlertOctagon, TrendingDown, Target, Activity,
+  ShieldCheck, ShieldAlert, ShieldX, ArrowRight, Zap,
+  ListChecks
+} from "lucide-react";
 
+/* ─── Types ─────────────────────────────────────────────────────── */
 type VerdictConfig = {
   icon: React.ReactNode;
-  label: string;
   headline: string;
   sub: string;
   style: string;
   leftBar: string;
 };
 
+/* ─── Verdict ────────────────────────────────────────────────────── */
 function getVerdict(
   riskScore: number,
   disciplineScore: number,
@@ -20,71 +25,159 @@ function getVerdict(
   chasingLosses: boolean,
   overconfidence: boolean,
 ): VerdictConfig {
-  const criticalIssues = (tiltDetected ? 1 : 0) + (chasingLosses ? 1 : 0);
-
-  if (criticalIssues >= 2 || riskScore > 75) {
+  const critical = (tiltDetected ? 1 : 0) + (chasingLosses ? 1 : 0);
+  if (critical >= 2 || riskScore > 75) {
     return {
-      icon: <ShieldX className="w-6 h-6 shrink-0" />,
-      label: "BEHAVIORAL ASSESSMENT",
+      icon: <ShieldX className="w-5 h-5 shrink-0" />,
       headline: "WARNING — LOSING BEHAVIORAL PATTERNS DETECTED",
-      sub: "Your recent betting history shows multiple high-risk behaviors. Immediate correction required to protect your bankroll.",
-      style: "bg-[#FF4D4D]/[0.06] border-[#FF4D4D]/25 text-[#FF4D4D]",
-      leftBar: "bg-[#FF4D4D]",
+      sub: "Multiple high-risk behaviors identified. Immediate correction required.",
+      style: "bg-loss/[0.06] border-loss/25 text-loss",
+      leftBar: "bg-loss",
     };
   }
-
-  if (tiltDetected || chasingLosses || riskScore > 55 || (overconfidence && riskScore > 40)) {
+  if (tiltDetected || chasingLosses || riskScore > 55) {
     return {
-      icon: <ShieldAlert className="w-6 h-6 shrink-0" />,
-      label: "BEHAVIORAL ASSESSMENT",
+      icon: <ShieldAlert className="w-5 h-5 shrink-0" />,
       headline: "CAUTION — BEHAVIORAL RISK IDENTIFIED",
-      sub: "Patterns in your betting history suggest emerging risk behaviors. Address these before they compound.",
+      sub: "Emerging risk patterns detected. Address these before they compound.",
       style: "bg-yellow-400/[0.05] border-yellow-400/20 text-yellow-400",
       leftBar: "bg-yellow-400",
     };
   }
-
-  if (overconfidence && riskScore <= 40) {
+  if (overconfidence) {
     return {
-      icon: <ShieldAlert className="w-6 h-6 shrink-0" />,
-      label: "BEHAVIORAL ASSESSMENT",
+      icon: <ShieldAlert className="w-5 h-5 shrink-0" />,
       headline: "OVERCONFIDENCE BIAS — MANAGE YOUR STAKES",
-      sub: "You are winning, but showing signs of overconfidence. Protect your edge by maintaining strict unit sizing.",
+      sub: "You are winning, but showing signs of overconfidence. Protect your edge.",
       style: "bg-yellow-400/[0.05] border-yellow-400/20 text-yellow-400",
       leftBar: "bg-yellow-400",
     };
   }
-
   if (disciplineScore >= 75 && riskScore < 40) {
     return {
-      icon: <ShieldCheck className="w-6 h-6 shrink-0" />,
-      label: "BEHAVIORAL ASSESSMENT",
+      icon: <ShieldCheck className="w-5 h-5 shrink-0" />,
       headline: "STRONG — YOUR DISCIPLINE IS YOUR EDGE",
-      sub: "Your betting behavior shows consistent bankroll discipline and controlled risk. Stay the course.",
-      style: "bg-[#2DFF88]/[0.05] border-[#2DFF88]/20 text-[#2DFF88]",
-      leftBar: "bg-[#2DFF88]",
+      sub: "Consistent bankroll discipline. No critical behavioral flags. Stay the course.",
+      style: "bg-success/[0.05] border-success/20 text-success",
+      leftBar: "bg-success",
     };
   }
-
   return {
-    icon: <ShieldCheck className="w-6 h-6 shrink-0" />,
-    label: "BEHAVIORAL ASSESSMENT",
-    headline: "NEUTRAL — PERFORMANCE WITHIN ACCEPTABLE RANGE",
-    sub: "No critical behavioral flags detected. Continue logging bets to refine your behavioral profile.",
+    icon: <ShieldCheck className="w-5 h-5 shrink-0" />,
+    headline: "NEUTRAL — WITHIN ACCEPTABLE RANGE",
+    sub: "No critical flags detected. Continue logging bets to sharpen your behavioral profile.",
     style: "bg-white/[0.03] border-white/10 text-white/70",
     leftBar: "bg-white/20",
   };
 }
 
+/* ─── One action recommendation ─────────────────────────────────── */
+function getOneAction(
+  riskScore: number,
+  disciplineScore: number,
+  tiltDetected: boolean,
+  chasingLosses: boolean,
+  overconfidence: boolean,
+): string {
+  if (tiltDetected && chasingLosses)
+    return "Stop betting for 24 hours. Your decision-making is compromised. Do not place any bet until you have reviewed your last 5 losses and identified the pattern causing your behavior.";
+  if (tiltDetected)
+    return "Do not place any bets for the next 24 hours. Allow your decision-making to reset before continuing. Tilt behavior compounds losses.";
+  if (chasingLosses)
+    return "Reduce your stake size by 25% on all bets until you record 2 consecutive wins. Do not increase bet size under any circumstances during a losing run.";
+  if (riskScore > 75)
+    return "Limit yourself to 1 bet today. Keep stake below 2% of your starting bankroll. Your risk exposure is critically high.";
+  if (overconfidence)
+    return "Keep all bets at your standard flat stake for the next 5 plays, regardless of your confidence level. Win streaks create false certainty.";
+  if (riskScore > 50)
+    return "Reduce stake size by 15% today and avoid parlays. Your risk indicators are elevated. Preserve capital.";
+  if (disciplineScore >= 80)
+    return "Continue your current approach. Maintain unit sizing discipline. Do not deviate — your edge is built on consistency.";
+  return "Maintain flat stake sizing on all bets today. Focus on your documented thesis and avoid impulse plays.";
+}
+
+/* ─── Cause→Effect blocks ────────────────────────────────────────── */
+interface CauseEffectItem {
+  trigger: string;
+  cause: string;
+  effect: string;
+  colorClass: string;
+  borderClass: string;
+  icon: React.ReactNode;
+}
+
+function buildCauseEffects(
+  tiltDetected: boolean,
+  tiltExplanation: string,
+  chasingLosses: boolean,
+  chasingLossesExplanation: string,
+  overconfidence: boolean,
+  overconfidenceExplanation: string,
+  riskScore: number,
+): CauseEffectItem[] {
+  const items: CauseEffectItem[] = [];
+
+  if (tiltDetected) {
+    items.push({
+      trigger: "Tilt Behavior",
+      cause: tiltExplanation,
+      effect:
+        "Tilt causes larger, less-calculated bets — driving your risk score up and your discipline score down.",
+      colorClass: "text-loss",
+      borderClass: "border-loss/20 bg-loss/[0.04]",
+      icon: <AlertOctagon className="w-4 h-4 text-loss shrink-0 mt-0.5" />,
+    });
+  }
+
+  if (chasingLosses) {
+    items.push({
+      trigger: "Loss Chasing",
+      cause: chasingLossesExplanation,
+      effect:
+        "Chasing losses with larger stakes amplifies your drawdown and destroys bankroll discipline systematically.",
+      colorClass: "text-loss",
+      borderClass: "border-loss/20 bg-loss/[0.04]",
+      icon: <TrendingDown className="w-4 h-4 text-loss shrink-0 mt-0.5" />,
+    });
+  }
+
+  if (overconfidence) {
+    items.push({
+      trigger: "Overconfidence Bias",
+      cause: overconfidenceExplanation,
+      effect:
+        "Overconfidence leads to inflated stake sizing during win streaks — one bad sequence can wipe accumulated gains.",
+      colorClass: "text-yellow-400",
+      borderClass: "border-yellow-400/20 bg-yellow-400/[0.04]",
+      icon: <Target className="w-4 h-4 text-yellow-400 shrink-0 mt-0.5" />,
+    });
+  }
+
+  if (items.length === 0 && riskScore < 40) {
+    items.push({
+      trigger: "No Active Behavioral Issues",
+      cause: "Your recent betting history shows no statistically significant risk patterns.",
+      effect:
+        "Your discipline is holding. The goal now is consistency — not growth, not experimentation.",
+      colorClass: "text-success",
+      borderClass: "border-success/20 bg-success/[0.04]",
+      icon: <ShieldCheck className="w-4 h-4 text-success shrink-0 mt-0.5" />,
+    });
+  }
+
+  return items;
+}
+
+/* ─── Component ──────────────────────────────────────────────────── */
 export default function Insights() {
   const { isAuthenticated } = useAuth();
-  
+
   const { data: insights, isLoading, isError } = useGetInsights({
     query: {
       enabled: isAuthenticated,
       queryKey: getGetInsightsQueryKey(),
-      retry: false
-    }
+      retry: false,
+    },
   });
 
   if (isLoading) {
@@ -92,15 +185,16 @@ export default function Insights() {
       <div className="p-6 md:p-8 space-y-6 max-w-5xl mx-auto">
         <Skeleton className="h-20 w-full bg-card/50 rounded-[14px]" />
         <div>
-          <Skeleton className="h-8 w-56 bg-card/50 mb-2 rounded-[10px]" />
-          <Skeleton className="h-4 w-72 bg-card/50 rounded-[4px]" />
+          <Skeleton className="h-8 w-56 bg-card/50 mb-2 rounded" />
+          <Skeleton className="h-4 w-64 bg-card/50 rounded" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <Skeleton className="h-52 bg-card/50 rounded-[14px]" />
           <Skeleton className="h-52 bg-card/50 rounded-[14px]" />
         </div>
         <Skeleton className="h-36 w-full bg-card/50 rounded-[14px]" />
-        <Skeleton className="h-64 w-full bg-card/50 rounded-[14px]" />
+        <Skeleton className="h-52 w-full bg-card/50 rounded-[14px]" />
+        <Skeleton className="h-48 w-full bg-card/50 rounded-[14px]" />
       </div>
     );
   }
@@ -112,15 +206,25 @@ export default function Insights() {
           <Activity className="w-10 h-10 text-muted-foreground/40" />
         </div>
         <div>
-          <h2 className="text-2xl font-bold uppercase tracking-widest text-white mb-3">Coach Analysis Locked</h2>
+          <h2 className="text-2xl font-bold uppercase tracking-widest text-white mb-3">
+            Coach Analysis Locked
+          </h2>
           <p className="text-muted-foreground leading-relaxed">
-            Log at least <span className="text-white font-bold">3 bets</span> to activate your behavioral profile. The analysis engine requires sufficient history to detect patterns.
+            Log at least{" "}
+            <span className="text-white font-bold">3 completed bets</span> to
+            activate your behavioral profile.
           </p>
         </div>
         <div className="bg-card border border-card-border rounded-[14px] p-5 w-full text-left space-y-3">
-          {["Log at least 3 completed bets (Win or Loss)", "Include sport, bet type, odds, and stake", "Results are analyzed in real-time"].map((step, i) => (
+          {[
+            "Log at least 3 completed bets (Win or Loss)",
+            "Include sport, bet type, odds, and stake",
+            "Results are analyzed and your profile builds in real-time",
+          ].map((step, i) => (
             <div key={i} className="flex items-start gap-3">
-              <span className="font-mono text-primary font-bold text-sm bg-primary/10 w-6 h-6 flex items-center justify-center rounded-[6px] shrink-0 mt-0.5">{i + 1}</span>
+              <span className="font-mono text-primary font-bold text-xs bg-primary/10 w-6 h-6 flex items-center justify-center rounded-[6px] shrink-0 mt-0.5">
+                {i + 1}
+              </span>
               <p className="text-sm text-white/80">{step}</p>
             </div>
           ))}
@@ -129,19 +233,11 @@ export default function Insights() {
     );
   }
 
-  const getRiskColor = (score: number) => {
-    if (score > 75) return "text-loss";
-    if (score > 40) return "text-yellow-400";
-    return "text-success";
-  };
+  const getRiskColor = (s: number) =>
+    s > 75 ? "text-loss" : s > 40 ? "text-yellow-400" : "text-success";
+  const getDisciplineColor = (s: number) =>
+    s < 40 ? "text-loss" : s < 75 ? "text-yellow-400" : "text-success";
 
-  const getDisciplineColor = (score: number) => {
-    if (score < 40) return "text-loss";
-    if (score < 75) return "text-yellow-400";
-    return "text-success";
-  };
-
-  const hasAlerts = insights.tiltDetected || insights.chasingLosses || insights.overconfidence;
   const verdict = getVerdict(
     insights.riskScore,
     insights.bankrollDisciplineScore,
@@ -150,23 +246,45 @@ export default function Insights() {
     insights.overconfidence,
   );
 
+  const oneAction = getOneAction(
+    insights.riskScore,
+    insights.bankrollDisciplineScore,
+    insights.tiltDetected,
+    insights.chasingLosses,
+    insights.overconfidence,
+  );
+
+  const causeEffects = buildCauseEffects(
+    insights.tiltDetected,
+    insights.tiltExplanation ?? "",
+    insights.chasingLosses,
+    insights.chasingLossesExplanation ?? "",
+    insights.overconfidence,
+    insights.overconfidenceExplanation ?? "",
+    insights.riskScore,
+  );
+
   return (
     <div className="p-6 md:p-8 space-y-7 max-w-5xl mx-auto">
 
-      {/* Verdict Card — the most prominent element */}
-      <div className={`relative overflow-hidden flex items-start gap-4 p-5 rounded-[14px] border border-l-4 ${verdict.style} ${verdict.leftBar.replace('bg-', 'border-l-')}`}>
+      {/* ── Verdict ─────────────────────────────────────────────── */}
+      <div
+        className={`relative overflow-hidden flex items-start gap-4 p-5 rounded-[14px] border ${verdict.style}`}
+      >
         <div className={`absolute top-0 left-0 w-1 h-full ${verdict.leftBar}`} />
-        <div className="pl-2">
-          {verdict.icon}
-        </div>
+        <div className="pl-2 mt-0.5">{verdict.icon}</div>
         <div>
-          <p className="text-[9px] font-bold uppercase tracking-widest opacity-60 mb-1">{verdict.label}</p>
-          <h2 className="font-black uppercase tracking-wider text-base md:text-lg leading-tight mb-1.5">{verdict.headline}</h2>
-          <p className="text-sm opacity-75 leading-relaxed">{verdict.sub}</p>
+          <p className="text-[9px] font-bold uppercase tracking-widest opacity-60 mb-1">
+            Behavioral Assessment
+          </p>
+          <h2 className="font-black uppercase tracking-wider text-sm md:text-base leading-snug mb-1.5">
+            {verdict.headline}
+          </h2>
+          <p className="text-xs opacity-75 leading-relaxed">{verdict.sub}</p>
         </div>
       </div>
 
-      {/* Page Header */}
+      {/* ── Page header ─────────────────────────────────────────── */}
       <div>
         <h1 className="text-2xl font-bold tracking-widest uppercase flex items-center gap-3 text-white">
           <div className="w-9 h-9 bg-primary/10 rounded-[10px] flex items-center justify-center">
@@ -174,24 +292,36 @@ export default function Insights() {
           </div>
           Coach Analysis
         </h1>
-        <p className="text-muted-foreground mt-2 font-semibold tracking-widest uppercase text-[10px]">AI-Driven Behavioral Profiling</p>
+        <p className="text-muted-foreground mt-2 font-semibold tracking-widest uppercase text-[10px]">
+          AI-Driven Behavioral Profiling
+        </p>
       </div>
 
-      {/* Score Cards */}
+      {/* ── Score cards ─────────────────────────────────────────── */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <Card className="bg-card border-card-border rounded-[14px] overflow-hidden shadow-xl relative">
           <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-success via-yellow-400 to-loss opacity-40" />
-          <CardContent className="p-8 text-center flex flex-col items-center justify-center">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-5 block">Risk Score</span>
-            <div className={`text-8xl font-black tracking-tighter font-mono ${getRiskColor(insights.riskScore)} mb-5`}>
+          <CardContent className="p-7 text-center flex flex-col items-center">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-4 block">
+              Risk Score
+            </span>
+            <div
+              className={`text-8xl font-black tracking-tighter font-mono ${getRiskColor(insights.riskScore)} mb-4`}
+            >
               {insights.riskScore}
             </div>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium max-w-xs leading-relaxed">
-              Stake sizing variance · Odds volatility · Bet frequency
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium max-w-xs leading-relaxed mb-4">
+              Stake variance · Odds volatility · Bet frequency
             </p>
-            <div className="mt-4 w-full bg-white/5 rounded-full h-1.5 overflow-hidden">
+            <div className="w-full bg-white/5 rounded-full h-1.5 overflow-hidden">
               <div
-                className={`h-full rounded-full transition-all ${insights.riskScore > 75 ? 'bg-loss' : insights.riskScore > 40 ? 'bg-yellow-400' : 'bg-success'}`}
+                className={`h-full rounded-full ${
+                  insights.riskScore > 75
+                    ? "bg-loss"
+                    : insights.riskScore > 40
+                      ? "bg-yellow-400"
+                      : "bg-success"
+                }`}
                 style={{ width: `${insights.riskScore}%` }}
               />
             </div>
@@ -204,101 +334,130 @@ export default function Insights() {
 
         <Card className="bg-card border-card-border rounded-[14px] overflow-hidden shadow-xl relative">
           <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-loss via-yellow-400 to-success opacity-40" />
-          <CardContent className="p-8 text-center flex flex-col items-center justify-center">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-5 block">Discipline Score</span>
-            <div className={`text-8xl font-black tracking-tighter font-mono ${getDisciplineColor(insights.bankrollDisciplineScore)} mb-5`}>
+          <CardContent className="p-7 text-center flex flex-col items-center">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-4 block">
+              Discipline Score
+            </span>
+            <div
+              className={`text-8xl font-black tracking-tighter font-mono ${getDisciplineColor(insights.bankrollDisciplineScore)} mb-4`}
+            >
               {insights.bankrollDisciplineScore}
             </div>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium max-w-xs leading-relaxed">
-              Unit sizing adherence · Impulse resistance · Consistency
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium max-w-xs leading-relaxed mb-4">
+              Unit sizing · Impulse resistance · Consistency
             </p>
-            <div className="mt-4 w-full bg-white/5 rounded-full h-1.5 overflow-hidden">
+            <div className="w-full bg-white/5 rounded-full h-1.5 overflow-hidden">
               <div
-                className={`h-full rounded-full transition-all ${insights.bankrollDisciplineScore < 40 ? 'bg-loss' : insights.bankrollDisciplineScore < 75 ? 'bg-yellow-400' : 'bg-success'}`}
+                className={`h-full rounded-full ${
+                  insights.bankrollDisciplineScore < 40
+                    ? "bg-loss"
+                    : insights.bankrollDisciplineScore < 75
+                      ? "bg-yellow-400"
+                      : "bg-success"
+                }`}
                 style={{ width: `${insights.bankrollDisciplineScore}%` }}
               />
             </div>
             <div className="flex justify-between w-full mt-1">
-              <span className="text-[9px] text-loss uppercase tracking-wider">Undisciplined</span>
+              <span className="text-[9px] text-loss uppercase tracking-wider">
+                Undisciplined
+              </span>
               <span className="text-[9px] text-success uppercase tracking-wider">Elite</span>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Behavioral Alerts */}
+      {/* ── Cause → Effect Analysis ─────────────────────────────── */}
       <div className="space-y-3">
-        <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Behavioral Triggers</h3>
+        <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+          <Zap className="w-3.5 h-3.5" /> Cause → Effect Analysis
+        </h3>
 
-        {hasAlerts ? (
-          <div className="space-y-3">
-            {insights.tiltDetected && (
-              <div className="bg-loss/[0.04] border border-loss/20 p-5 rounded-[14px] flex items-start gap-4 relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-1 h-full bg-loss" />
-                <AlertOctagon className="w-5 h-5 text-loss shrink-0 mt-0.5 ml-1" />
-                <div>
-                  <h4 className="font-black text-loss uppercase tracking-widest text-xs mb-2">Tilt Behavior Detected</h4>
-                  <p className="text-white/75 text-sm leading-relaxed">{insights.tiltExplanation}</p>
-                </div>
-              </div>
-            )}
-            {insights.chasingLosses && (
-              <div className="bg-loss/[0.04] border border-loss/20 p-5 rounded-[14px] flex items-start gap-4 relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-1 h-full bg-loss" />
-                <TrendingDown className="w-5 h-5 text-loss shrink-0 mt-0.5 ml-1" />
-                <div>
-                  <h4 className="font-black text-loss uppercase tracking-widest text-xs mb-2">Loss Chasing Detected</h4>
-                  <p className="text-white/75 text-sm leading-relaxed">{insights.chasingLossesExplanation}</p>
-                </div>
-              </div>
-            )}
-            {insights.overconfidence && (
-              <div className="bg-yellow-400/[0.04] border border-yellow-400/20 p-5 rounded-[14px] flex items-start gap-4 relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-1 h-full bg-yellow-400" />
-                <Target className="w-5 h-5 text-yellow-400 shrink-0 mt-0.5 ml-1" />
-                <div>
-                  <h4 className="font-black text-yellow-400 uppercase tracking-widest text-xs mb-2">Overconfidence Bias</h4>
-                  <p className="text-white/75 text-sm leading-relaxed">{insights.overconfidenceExplanation}</p>
-                </div>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className="bg-success/[0.04] border border-success/20 p-5 rounded-[14px] flex items-center gap-4 relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-1 h-full bg-success" />
-            <div className="w-8 h-8 rounded-full bg-success/15 flex items-center justify-center shrink-0 ml-1">
-              <div className="w-2.5 h-2.5 rounded-full bg-success" />
+        {causeEffects.map((item, idx) => (
+          <div
+            key={idx}
+            className={`border rounded-[14px] p-5 relative overflow-hidden ${item.borderClass}`}
+          >
+            <div className="flex items-start gap-3 mb-4">
+              {item.icon}
+              <h4 className={`font-black uppercase tracking-widest text-xs ${item.colorClass}`}>
+                {item.trigger}
+              </h4>
             </div>
-            <div>
-              <h4 className="font-black text-success uppercase tracking-widest text-xs">No Behavioral Alerts</h4>
-              <p className="text-white/60 text-xs mt-1">Your recent betting shows no critical psychological risk flags.</p>
+
+            <div className="space-y-3 pl-1">
+              {/* What happened */}
+              <div className="flex items-start gap-3">
+                <div className="flex flex-col items-center shrink-0 pt-1">
+                  <div className="w-1.5 h-1.5 rounded-full bg-white/30" />
+                  <div className="w-px h-6 bg-white/10 mt-1" />
+                </div>
+                <div>
+                  <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground mb-1">
+                    What Happened
+                  </p>
+                  <p className="text-sm text-white/80 leading-relaxed">{item.cause}</p>
+                </div>
+              </div>
+
+              {/* Why it matters */}
+              <div className="flex items-start gap-3">
+                <div className="flex flex-col items-center shrink-0 pt-1">
+                  <ArrowRight className="w-3.5 h-3.5 text-white/20" />
+                </div>
+                <div>
+                  <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground mb-1">
+                    Behavioral Effect
+                  </p>
+                  <p className="text-sm text-white/60 leading-relaxed italic">{item.effect}</p>
+                </div>
+              </div>
             </div>
           </div>
-        )}
+        ))}
       </div>
 
-      {/* Coach Directives */}
-      <div className="bg-card border border-card-border rounded-[14px] p-7 md:p-9 shadow-xl relative overflow-hidden">
+      {/* ── Coach Directives ────────────────────────────────────── */}
+      <div className="bg-card border border-card-border rounded-[14px] p-6 md:p-8 shadow-xl relative overflow-hidden">
         <div className="absolute -right-16 -top-16 w-52 h-52 bg-primary/[0.04] rounded-full blur-3xl pointer-events-none" />
-        
-        <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-7 flex items-center gap-2.5">
-          <Lightbulb className="w-4 h-4 text-primary" /> Coach Directives
+
+        <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-6 flex items-center gap-2">
+          <ListChecks className="w-3.5 h-3.5 text-primary" /> Coach Directives
         </h3>
-        
-        <blockquote className="text-white text-lg md:text-xl font-medium italic leading-relaxed mb-8 pl-5 border-l-4 border-primary text-white/90">
+
+        <blockquote className="text-white text-base md:text-lg font-medium italic leading-relaxed mb-7 pl-4 border-l-4 border-primary text-white/90">
           "{insights.summary}"
         </blockquote>
-        
+
         <div className="space-y-3">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-4">Rules to Follow</p>
           {insights.improvementRules.map((rule, idx) => (
-            <div key={idx} className="flex items-start gap-4 p-4 bg-black/20 border border-white/[0.04] rounded-[10px] hover:border-primary/15 transition-colors">
-              <span className="font-mono text-primary font-black text-sm bg-primary/10 w-7 h-7 flex items-center justify-center rounded-[6px] shrink-0">
+            <div
+              key={idx}
+              className="flex items-start gap-4 p-4 bg-black/20 border border-white/[0.04] rounded-[10px] hover:border-primary/15 transition-colors"
+            >
+              <span className="font-mono text-primary font-black text-xs bg-primary/10 w-7 h-7 flex items-center justify-center rounded-[6px] shrink-0">
                 {idx + 1}
               </span>
               <p className="text-white/85 text-sm leading-relaxed pt-0.5">{rule}</p>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* ── One Action Recommendation ────────────────────────────── */}
+      <div className="border border-primary/20 bg-primary/[0.03] rounded-[14px] p-5 md:p-6 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-1 h-full bg-primary" />
+        <div className="pl-3">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-6 h-6 bg-primary/15 rounded-[6px] flex items-center justify-center">
+              <ArrowRight className="w-3.5 h-3.5 text-primary" />
+            </div>
+            <p className="text-[9px] font-black uppercase tracking-widest text-primary">
+              Your One Action Today
+            </p>
+          </div>
+          <p className="text-white text-sm leading-relaxed font-medium">{oneAction}</p>
         </div>
       </div>
     </div>
