@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @plugin "@tailwindcss/typography";
@@ -63,68 +64,103 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-/* DARK MODE DEFAULT FOR BETPULSE */
 :root {
-  --button-outline: rgba(255,255,255, .10);
-  --badge-outline: rgba(255,255,255, .05);
+  --background: 218 25% 5%;
+  --foreground: 210 20% 98%;
+  
+  --card: 218 20% 9%;
+  --card-foreground: 210 20% 98%;
+  --card-border: 218 15% 15%;
+  
+  --primary: 150 100% 59%;
+  --primary-foreground: 218 25% 5%;
+  
+  --destructive: 0 100% 65%;
+  --destructive-foreground: 0 0% 100%;
+  
+  --muted: 218 20% 13%;
+  --muted-foreground: 220 9% 46%;
+  
+  --border: 218 15% 15%;
+  --input: 218 20% 12%;
+  --ring: 150 100% 59%;
+  
+  --success: 150 100% 59%;
+  
+  --secondary: 218 15% 13%;
+  --secondary-foreground: 210 20% 98%;
+  
+  --accent: 218 15% 16%;
+  --accent-foreground: 210 20% 98%;
+  
+  --sidebar: 218 22% 7%;
+  --sidebar-foreground: 210 20% 98%;
+  --sidebar-border: 218 15% 13%;
+  --sidebar-primary: 150 100% 59%;
+  --sidebar-primary-foreground: 218 25% 5%;
+  --sidebar-accent: 218 15% 13%;
+  --sidebar-accent-foreground: 210 20% 98%;
+  --sidebar-ring: 150 100% 59%;
+  
+  --popover: 218 20% 9%;
+  --popover-foreground: 210 20% 98%;
+  --popover-border: 218 15% 15%;
+  
+  --chart-1: 150 100% 59%;
+  --chart-2: 160 80% 50%;
+  --chart-3: 170 70% 45%;
+  --chart-4: 210 80% 60%;
+  --chart-5: 220 70% 50%;
 
-  --opaque-button-border-intensity: 9;
-
-  --elevate-1: rgba(255,255,255, .04);
-  --elevate-2: rgba(255,255,255, .09);
-
-  --background: 240 10% 4%;
-  --foreground: 0 0% 98%;
-
-  --card: 240 10% 6%;
-  --card-foreground: 0 0% 98%;
-  --card-border: 240 10% 12%;
-
-  --popover: 240 10% 6%;
-  --popover-foreground: 0 0% 98%;
-  --popover-border: 240 10% 12%;
-
-  --primary: 156 100% 50%;
-  --primary-foreground: 156 100% 10%;
-
-  --secondary: 240 10% 15%;
-  --secondary-foreground: 0 0% 98%;
-
-  --muted: 240 10% 12%;
-  --muted-foreground: 240 5% 65%;
-
-  --accent: 240 10% 15%;
-  --accent-foreground: 0 0% 98%;
-
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 0 0% 98%;
-
-  --success: 156 100% 50%;
-  --success-foreground: 156 100% 10%;
-
-  --border: 240 10% 15%;
-  --input: 240 10% 15%;
-  --ring: 156 100% 50%;
-
-  --sidebar: 240 10% 5%;
-  --sidebar-foreground: 0 0% 98%;
-  --sidebar-border: 240 10% 12%;
-  --sidebar-primary: 156 100% 50%;
-  --sidebar-primary-foreground: 156 100% 10%;
-  --sidebar-accent: 240 10% 12%;
-  --sidebar-accent-foreground: 0 0% 98%;
-  --sidebar-ring: 156 100% 50%;
-
-  --chart-1: 156 100% 50%;
-  --chart-2: 240 80% 60%;
-  --chart-3: 0 84% 60%;
-  --chart-4: 280 65% 60%;
-  --chart-5: 340 75% 55%;
-
-  --app-font-sans: 'Inter', sans-serif;
+  --app-font-sans: 'Geist', sans-serif;
   --app-font-serif: Georgia, serif;
   --app-font-mono: 'JetBrains Mono', monospace;
-  --radius: 0.375rem;
+  --radius: 0.875rem;
+
+  --button-outline: rgba(255,255,255, .10);
+  --badge-outline: rgba(255,255,255, .05);
+  --opaque-button-border-intensity: 9;
+  --elevate-1: rgba(255,255,255, .04);
+  --elevate-2: rgba(255,255,255, .09);
+}
+
+.dark {
+  /* Dark mode is same as light mode */
+  --background: 218 25% 5%;
+  --foreground: 210 20% 98%;
+  --card: 218 20% 9%;
+  --card-foreground: 210 20% 98%;
+  --card-border: 218 15% 15%;
+  --primary: 150 100% 59%;
+  --primary-foreground: 218 25% 5%;
+  --destructive: 0 100% 65%;
+  --destructive-foreground: 0 0% 100%;
+  --muted: 218 20% 13%;
+  --muted-foreground: 220 9% 46%;
+  --border: 218 15% 15%;
+  --input: 218 20% 12%;
+  --ring: 150 100% 59%;
+  --success: 150 100% 59%;
+  --secondary: 218 15% 13%;
+  --secondary-foreground: 210 20% 98%;
+  --accent: 218 15% 16%;
+  --accent-foreground: 210 20% 98%;
+  --sidebar: 218 22% 7%;
+  --sidebar-foreground: 210 20% 98%;
+  --sidebar-border: 218 15% 13%;
+  --sidebar-primary: 150 100% 59%;
+  --sidebar-primary-foreground: 218 25% 5%;
+  --sidebar-accent: 218 15% 13%;
+  --sidebar-accent-foreground: 210 20% 98%;
+  --sidebar-ring: 150 100% 59%;
+  --popover: 218 20% 9%;
+  --popover-foreground: 210 20% 98%;
+  --popover-border: 218 15% 15%;
+  --chart-1: 150 100% 59%;
+  --chart-2: 160 80% 50%;
+  --chart-3: 170 70% 45%;
+  --chart-4: 210 80% 60%;
+  --chart-5: 220 70% 50%;
 }
 
 @layer base {
@@ -136,3 +172,8 @@
     @apply font-sans antialiased bg-background text-foreground;
   }
 }
+
+.text-success { color: hsl(var(--primary)); }
+.text-loss { color: hsl(var(--destructive)); }
+.bg-success { background-color: hsl(var(--primary)); }
+.bg-loss { background-color: hsl(var(--destructive)); }

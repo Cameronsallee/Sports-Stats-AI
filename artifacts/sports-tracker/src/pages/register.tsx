@@ -44,25 +44,32 @@ export default function Register() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md space-y-8">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4 text-foreground">
+      <div className="w-full max-w-[400px] space-y-8">
         <div className="flex flex-col items-center justify-center text-center">
-          <BarChart3 className="w-12 h-12 text-primary mb-4" />
-          <h2 className="text-3xl font-bold tracking-tight text-foreground uppercase">BetPulse</h2>
-          <p className="text-muted-foreground mt-2">Initialize your analytics profile.</p>
+          <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(45,255,136,0.15)]">
+            <BarChart3 className="w-8 h-8 text-primary" />
+          </div>
+          <h2 className="text-3xl font-bold tracking-widest text-white uppercase">BETPULSE</h2>
+          <p className="text-muted-foreground mt-2 font-medium tracking-wide">INITIALIZE PROFILE</p>
         </div>
 
-        <div className="bg-card border border-border p-6 sm:p-8 rounded-lg shadow-lg">
+        <div className="bg-card border border-white/5 p-8 rounded-[14px] shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent opacity-50" />
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
               <FormField
                 control={form.control}
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel className="text-muted-foreground uppercase text-xs tracking-wider font-semibold">Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="terminal@betpulse.io" {...field} className="bg-background" />
+                      <Input 
+                        placeholder="terminal@betpulse.io" 
+                        {...field} 
+                        className="bg-input border-white/5 focus-visible:ring-primary h-12 rounded-[10px] text-white placeholder:text-muted-foreground/50" 
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -73,21 +80,31 @@ export default function Register() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel className="text-muted-foreground uppercase text-xs tracking-wider font-semibold">Password</FormLabel>
                     <FormControl>
-                      <Input type="password" {...field} className="bg-background" />
+                      <Input 
+                        type="password" 
+                        placeholder="••••••••"
+                        {...field} 
+                        className="bg-input border-white/5 focus-visible:ring-primary h-12 rounded-[10px] text-white placeholder:text-muted-foreground/50" 
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full font-bold uppercase tracking-wider" disabled={registerMutation.isPending}>
+              <Button 
+                type="submit" 
+                className="w-full h-12 bg-primary text-[#0B0F14] hover:bg-primary/90 font-bold uppercase tracking-wider rounded-[10px] shadow-[0_0_20px_rgba(45,255,136,0.2)] hover:shadow-[0_0_25px_rgba(45,255,136,0.4)] transition-all mt-4" 
+                disabled={registerMutation.isPending}
+                data-testid="button-submit-register"
+              >
                 {registerMutation.isPending ? "Creating..." : "Create Profile"}
               </Button>
             </form>
           </Form>
-          <div className="mt-6 text-center text-sm text-muted-foreground">
-            Already registered? <Link href="/login" className="text-primary hover:underline">Access terminal</Link>
+          <div className="mt-8 text-center text-sm text-muted-foreground font-medium">
+            Already registered? <Link href="/login" className="text-primary hover:text-primary/80 transition-colors uppercase tracking-wider ml-1">Access Terminal</Link>
           </div>
         </div>
       </div>

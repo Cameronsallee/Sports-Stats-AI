@@ -1,0 +1,243 @@
+🚀 BETPULSE — CLEAN REFACTOR + UI/UX MARKETING UPGRADE PROMPT
+
+Refactor the existing BetPulse full-stack app into a production-ready, highly polished SaaS product.
+
+The backend is already built (auth, bets, bankroll, AI insights). Do NOT rebuild backend logic.
+
+Instead, focus on:
+
+1. UI/UX redesign
+2. frontend structure cleanup
+3. user clarity
+4. marketing-grade design system
+5. better data presentation
+
+⸻
+
+🎯 PRIMARY GOAL
+
+Turn BetPulse into a visually premium, easy-to-understand, high-retention SaaS app that clearly communicates value in under 5 seconds.
+
+⸻
+
+🎨 DESIGN SYSTEM (IMPORTANT)
+
+Create a consistent modern fintech-style UI:
+
+Colors:
+
+* Background: deep charcoal / near-black (#0B0F14)
+* Primary accent: neon green (#2DFF88) for profit/wins
+* Secondary accent: red (#FF4D4D) for losses
+* Neutral text: white / light gray
+* Cards: dark elevated panels with soft borders
+
+⸻
+
+Style Rules:
+
+* Minimal clutter
+* Strong spacing
+* Large readable stats
+* Rounded cards (12–16px radius)
+* Subtle shadows
+* Smooth hover animations
+* Mobile-first layout
+
+⸻
+
+🧭 INFORMATION HIERARCHY (VERY IMPORTANT)
+
+Dashboard must instantly show:
+
+1. Top Priority (above the fold)
+
+* Current bankroll (big number)
+* Total profit/loss
+* Win rate
+* ROI
+
+👉 These must be large, bold, and instantly readable
+
+⸻
+
+2. Secondary Insights
+
+* streaks (win/loss)
+* recent bets summary
+* risk level summary from AI
+
+⸻
+
+3. Deep Data (scroll section)
+
+* full bet history table
+* AI behavioral insights
+* bankroll breakdown chart
+
+⸻
+
+🏠 DASHBOARD REDESIGN
+
+Redesign dashboard into clean sections:
+
+SECTION 1: HERO STATS GRID
+
+4 cards:
+
+* Bankroll
+* Profit/Loss
+* Win Rate
+* ROI
+
+Each card:
+
+* icon
+* big number
+* small label
+* color-coded (green/red)
+
+⸻
+
+SECTION 2: PERFORMANCE INSIGHT BAR
+
+* “You are up/down $X this week”
+* “Risk Level: Low / Medium / High”
+
+⸻
+
+SECTION 3: BET HISTORY TABLE
+
+* clean modern table
+* rows clickable
+* color-coded results
+
+⸻
+
+SECTION 4: AI INSIGHTS PANEL
+
+* Risk score
+* Tilt detection
+* bankroll discipline score
+* 3 improvement rules
+
+Make this section feel like:
+
+“personal coach feedback panel”
+
+⸻
+
+➕ ADD BET PAGE (IMPROVE UX)
+
+Redesign form:
+
+* Step-based layout (not long form)
+* Clear labels
+* Smart grouping:
+    * Sport + Bet Type
+    * Teams + Odds
+    * Stake + Result
+
+After submission:
+
+* show success animation
+* instantly update dashboard stats
+
+⸻
+
+🧠 AI INSIGHTS UI IMPROVEMENT
+
+Make AI section:
+
+* visually separated as “Coach Analysis”
+* red highlight if risk is high
+* green if disciplined
+* include:
+    * “Behavior Summary”
+    * “Mistakes Detected”
+    * “Rules to Fix Them”
+
+Tone:
+
+* strict coach, not friendly assistant
+
+⸻
+
+📱 MOBILE OPTIMIZATION
+
+Must be:
+
+* fully responsive
+* stacked cards on mobile
+* bottom navigation bar optional
+* large tap targets
+
+⸻
+
+⚡ PERFORMANCE UX RULES
+
+* no slow-loading sections
+* skeleton loaders for data
+* instant dashboard render
+* no blank states without messaging
+
+⸻
+
+🧭 NAVIGATION STRUCTURE
+
+Simple layout:
+
+* Dashboard (main)
+* Add Bet
+* AI Insights
+
+No clutter, no extra pages.
+
+⸻
+
+🚫 REMOVE OR SIMPLIFY
+
+Remove or downgrade:
+
+* complex tables
+* developer-style raw data
+* unnecessary debug UI
+* anything that feels technical instead of user-focused
+
+⸻
+
+🎯 PRODUCT POSITIONING (IMPORTANT)
+
+The app must feel like:
+
+“A premium betting performance tracker that shows you how you bet, not what to bet.”
+
+NOT:
+
+* sportsbook tool
+* prediction system
+* betting tips app
+
+⸻
+
+🔥 FINAL GOAL
+
+After this refactor, the app should:
+
+* look like a real SaaS product (Stripe-level design quality)
+* be instantly understandable to a new user
+* clearly show value in under 5 seconds
+* feel premium and addictive to use
+* drive users to return daily to check performance
+
+⸻
+
+⚠️ DO NOT CHANGE
+
+* backend logic
+* AI logic (behavior-only, no picks)
+* database structure
+* authentication system
+
+ONLY improve:
+👉 frontend + UX + presentation + clarity
