@@ -3,13 +3,23 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: BetPulse API specification
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Authentication operations
+  - name: bets
+    description: Bet management
+  - name: bankroll
+    description: Bankroll management
+  - name: stats
+    description: Statistics and analytics
+  - name: insights
+    description: AI behavior insights
 paths:
   /healthz:
     get:
@@ -24,7 +34,317 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /auth/register:
+    post:
+      operationId: register
+      tags: [auth]
+      summary: Register new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthCredentials"
+      responses:
+        "201":
+          description: User registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Invalid input or email already taken
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Login user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthCredentials"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /bets:
+    get:
+      operationId: listBets
+      tags: [bets]
+      summary: List all bets for current user
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sport
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: result
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of bets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Bet"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      operationId: createBet
+      tags: [bets]
+      summary: Create a new bet
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBetBody"
+      responses:
+        "201":
+          description: Bet created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Bet"
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /bets/{id}:
+    get:
+      operationId: getBet
+      tags: [bets]
+      summary: Get a single bet
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Bet found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Bet"
+        "404":
+          description: Bet not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    patch:
+      operationId: updateBet
+      tags: [bets]
+      summary: Update a bet (e.g. set result)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateBetBody"
+      responses:
+        "200":
+          description: Bet updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Bet"
+        "404":
+          description: Bet not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteBet
+      tags: [bets]
+      summary: Delete a bet
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Bet deleted
+        "404":
+          description: Bet not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /bankroll:
+    get:
+      operationId: getBankroll
+      tags: [bankroll]
+      summary: Get current user's bankroll
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Bankroll info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Bankroll"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      operationId: updateBankroll
+      tags: [bankroll]
+      summary: Set starting bankroll
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateBankrollBody"
+      responses:
+        "200":
+          description: Bankroll updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Bankroll"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /stats:
+    get:
+      operationId: getStats
+      tags: [stats]
+      summary: Get betting stats summary for current user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Stats summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Stats"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /insights:
+    get:
+      operationId: getInsights
+      tags: [insights]
+      summary: Get AI behavior insights for current user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: AI insights
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Insights"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     HealthStatus:
       type: object
@@ -34,3 +354,265 @@ components:
       required:
         - status
 
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    AuthCredentials:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 6
+      required:
+        - email
+        - password
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+      required:
+        - id
+        - email
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+      required:
+        - token
+        - user
+
+    Bet:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        sport:
+          type: string
+        betType:
+          type: string
+        teams:
+          type: string
+        odds:
+          type: number
+        stake:
+          type: number
+        result:
+          type: ["string", "null"]
+        profitLoss:
+          type: ["number", "null"]
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - userId
+        - sport
+        - betType
+        - teams
+        - odds
+        - stake
+        - result
+        - profitLoss
+        - notes
+        - createdAt
+
+    CreateBetBody:
+      type: object
+      properties:
+        sport:
+          type: string
+        betType:
+          type: string
+        teams:
+          type: string
+        odds:
+          type: number
+        stake:
+          type: number
+        result:
+          type: ["string", "null"]
+        notes:
+          type: ["string", "null"]
+      required:
+        - sport
+        - betType
+        - teams
+        - odds
+        - stake
+
+    UpdateBetBody:
+      type: object
+      properties:
+        sport:
+          type: string
+        betType:
+          type: string
+        teams:
+          type: string
+        odds:
+          type: number
+        stake:
+          type: number
+        result:
+          type: ["string", "null"]
+        notes:
+          type: ["string", "null"]
+
+    Bankroll:
+      type: object
+      properties:
+        userId:
+          type: integer
+        startingBankroll:
+          type: number
+        currentBankroll:
+          type: number
+        totalProfitLoss:
+          type: number
+      required:
+        - userId
+        - startingBankroll
+        - currentBankroll
+        - totalProfitLoss
+
+    UpdateBankrollBody:
+      type: object
+      properties:
+        startingBankroll:
+          type: number
+      required:
+        - startingBankroll
+
+    Stats:
+      type: object
+      properties:
+        totalBets:
+          type: integer
+        wins:
+          type: integer
+        losses:
+          type: integer
+        pushes:
+          type: integer
+        pending:
+          type: integer
+        winRate:
+          type: number
+        totalStaked:
+          type: number
+        totalProfitLoss:
+          type: number
+        roi:
+          type: number
+        avgOdds:
+          type: number
+        avgStake:
+          type: number
+        bySport:
+          type: array
+          items:
+            $ref: "#/components/schemas/SportBreakdown"
+        recentStreak:
+          type: integer
+      required:
+        - totalBets
+        - wins
+        - losses
+        - pushes
+        - pending
+        - winRate
+        - totalStaked
+        - totalProfitLoss
+        - roi
+        - avgOdds
+        - avgStake
+        - bySport
+        - recentStreak
+
+    SportBreakdown:
+      type: object
+      properties:
+        sport:
+          type: string
+        totalBets:
+          type: integer
+        wins:
+          type: integer
+        losses:
+          type: integer
+        profitLoss:
+          type: number
+        winRate:
+          type: number
+      required:
+        - sport
+        - totalBets
+        - wins
+        - losses
+        - profitLoss
+        - winRate
+
+    Insights:
+      type: object
+      properties:
+        riskScore:
+          type: integer
+          minimum: 0
+          maximum: 100
+        tiltDetected:
+          type: boolean
+        tiltExplanation:
+          type: string
+        chasingLosses:
+          type: boolean
+        chasingLossesExplanation:
+          type: string
+        overconfidence:
+          type: boolean
+        overconfidenceExplanation:
+          type: string
+        bankrollDisciplineScore:
+          type: integer
+          minimum: 0
+          maximum: 100
+        improvementRules:
+          type: array
+          items:
+            type: string
+        summary:
+          type: string
+        generatedAt:
+          type: string
+          format: date-time
+      required:
+        - riskScore
+        - tiltDetected
+        - tiltExplanation
+        - chasingLosses
+        - chasingLossesExplanation
+        - overconfidence
+        - overconfidenceExplanation
+        - bankrollDisciplineScore
+        - improvementRules
+        - summary
+        - generatedAt
