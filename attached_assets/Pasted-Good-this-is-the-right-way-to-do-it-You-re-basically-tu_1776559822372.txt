@@ -1,0 +1,382 @@
+Good—this is the right way to do it. You’re basically turning your build into a controlled assembly line instead of a chaotic rebuild, which is exactly how you avoid the Base44 problems you hit.
+
+Below are clean, sequential Replit AI prompts. Each one is designed so the AI must fully complete the step before moving on.
+
+Do them in order, one at a time.
+
+⸻
+
+🧱 PROMPT 1 — FOUNDATION (DO NOT SKIP ANYTHING)
+
+Paste this first:
+
+⸻
+
+BUILD BETPULSE FOUNDATION (FULL STACK BASE ONLY)
+
+Create a complete working full-stack web app called BetPulse.
+
+GOAL OF THIS STEP:
+
+Only build the core skeleton system. No advanced features yet.
+
+⸻
+
+MUST BUILD:
+
+1. Backend (Express)
+
+* Node.js + Express server
+* Running on port 3001
+* JSON API enabled
+* CORS enabled
+
+2. Database (SQLite)
+
+Create tables:
+
+users
+
+* id
+* email
+* password
+
+bets
+
+* id
+* user_id
+* sport
+* bet_type
+* teams
+* odds
+* stake
+* result
+* profit_loss
+* created_at
+
+bankroll
+
+* user_id
+* starting_bankroll
+* current_bankroll
+
+⸻
+
+3. Frontend (React)
+
+Create a simple React app with:
+
+Pages:
+
+* Dashboard
+* Add Bet
+
+⸻
+
+REQUIRED RULES:
+
+* Everything must run without errors
+* App must start successfully
+* No subscription system yet
+* No AI yet
+* No authentication complexity yet (use temporary user_id = 1 for now)
+
+⸻
+
+DASHBOARD MUST SHOW:
+
+* placeholder bankroll value
+* placeholder bet list
+
+⸻
+
+ADD BET FORM MUST:
+
+* submit bet to backend
+* store in database
+* return success message
+
+⸻
+
+CRITICAL:
+
+Do NOT add extra features.
+Do NOT add AI.
+Do NOT add subscriptions.
+
+Only build a working base system.
+
+⸻
+
+🧪 END RESULT OF STEP 1:
+
+A working app where:
+
+* You can submit bets
+* Bets are saved
+* Dashboard shows them
+
+⸻
+
+🧱 PROMPT 2 — BANKROLL LOGIC (ONLY AFTER STEP 1 WORKS)
+
+Paste this next ONLY after Step 1 works:
+
+⸻
+
+ADD LIVE BANKROLL CALCULATION SYSTEM
+
+Enhance the existing BetPulse app.
+
+⸻
+
+MUST IMPLEMENT:
+
+1. Profit/Loss Logic
+
+When a bet is added:
+
+* If result = win → profit_loss = stake × (odds - 1)
+* If result = loss → profit_loss = -stake
+
+⸻
+
+2. Bankroll Updates
+
+* User has starting bankroll
+* current_bankroll = starting_bankroll + sum(all profit_loss)
+
+⸻
+
+3. Backend Update
+
+* Update bankroll automatically after every bet submission
+
+⸻
+
+4. Dashboard Update
+
+Show:
+
+* current bankroll
+* total profit/loss
+* win rate
+
+⸻
+
+RULES:
+
+* Must not break existing bet system
+* Must not add AI or subscriptions
+* Must fully work before next step
+
+⸻
+
+🧠 END RESULT STEP 2:
+
+* Live bankroll works
+* Stats update correctly
+* No broken calculations
+
+⸻
+
+🧱 PROMPT 3 — AUTHENTICATION + USER ISOLATION
+
+Paste ONLY after Step 2 works:
+
+⸻
+
+ADD AUTHENTICATION + USER DATA ISOLATION
+
+Upgrade BetPulse into a multi-user system.
+
+⸻
+
+MUST IMPLEMENT:
+
+1. Authentication
+
+* Simple email + password login
+* Session-based or JWT auth
+* Login + signup pages
+
+⸻
+
+2. User Isolation
+
+Every record MUST belong to a user:
+
+* bets.user_id = authenticated user
+* bankroll.user_id = authenticated user
+
+⸻
+
+3. Data Rules
+
+* Users can ONLY see their own data
+* No shared data between users
+
+⸻
+
+4. Frontend
+
+* Login page
+* Protected dashboard route
+
+⸻
+
+CRITICAL:
+
+* No AI yet
+* No subscriptions yet
+* Must not break existing bankroll logic
+
+⸻
+
+🧱 END RESULT STEP 3:
+
+* Real users exist
+* Each user has separate data
+* Login flow works
+
+⸻
+
+🧱 PROMPT 4 — AI BEHAVIOR ANALYSIS (NO PICKS ALLOWED)
+
+Paste ONLY after Step 3 works:
+
+⸻
+
+ADD AI BEHAVIOR ANALYSIS SYSTEM
+
+Add AI analysis based on user betting history.
+
+⸻
+
+MUST RETURN:
+
+* Risk Score (0–100)
+* Tilt detection (yes/no + explanation)
+* Chasing losses detection
+* Overconfidence detection
+* Bankroll discipline score
+* 3 improvement rules
+
+⸻
+
+STRICT RULE:
+
+AI MUST NEVER:
+
+* give picks
+* suggest bets
+* recommend teams
+* predict outcomes
+
+AI ONLY analyzes behavior.
+
+⸻
+
+INPUT:
+
+* all user bet history
+
+⸻
+
+OUTPUT STYLE:
+
+* direct
+* analytical
+* coach-like
+* slightly critical tone
+
+⸻
+
+FRONTEND:
+
+Add “AI Insights” section on dashboard.
+
+⸻
+
+🧠 END RESULT STEP 4:
+
+* AI behavior engine works
+* No betting advice exists
+* Insights are generated per user
+
+⸻
+
+🧱 PROMPT 5 — POLISH + STABILITY
+
+Paste last:
+
+⸻
+
+FINAL POLISH + BUG FIX HARDENING
+
+Stabilize BetPulse into a production-ready app.
+
+⸻
+
+MUST FIX:
+
+1. Button reliability
+
+* Log Bet must always work
+* Add Bet must never fail silently
+* Show errors clearly
+
+⸻
+
+2. Data safety
+
+* Ensure all queries are user-scoped
+* No cross-user leaks
+
+⸻
+
+3. UI cleanup
+
+* Clean dashboard layout
+* Mobile friendly design
+* Simple navigation:
+    * Dashboard
+    * Add Bet
+    * AI Insights
+
+⸻
+
+REMOVE ANY OF THE FOLLOWING IF THEY EXIST:
+
+* betting picks
+* predictions
+* “best bets”
+* parlay suggestions
+
+⸻
+
+FINAL GOAL:
+
+* fully working app
+* no broken flows
+* stable backend + frontend
+* clean user experience
+
+⸻
+
+🚀 WHY THIS WORKS
+
+This sequence forces:
+
+* no feature stacking chaos
+* no Base44-style coupling
+* stable foundation first
+* controlled complexity growth
+
+⸻
+
+If you want next, I can upgrade this into:
+
+* ￼ “Stripe-ready monetization step (safe, production SaaS)”
+* or ￼ “Supabase version (more scalable than SQLite)”
+* or ￼ “1-click Replit import repo structure with files pre-written”
