@@ -1,6 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/lib/auth";
-import { BarChart3, LayoutDashboard, ListPlus, LogOut, BrainCircuit } from "lucide-react";
+import { BarChart3, LayoutDashboard, ListPlus, LogOut, BrainCircuit, TrendingUp } from "lucide-react";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
@@ -9,6 +9,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const navItems = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { name: "Bets", href: "/bets", icon: ListPlus },
+    { name: "Analytics", href: "/analytics", icon: TrendingUp },
     { name: "Coach", href: "/insights", icon: BrainCircuit },
   ];
 
@@ -63,19 +64,19 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </main>
 
       {/* Mobile Bottom Nav */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-[#141920] border-t border-border flex items-center justify-around p-3 z-50 shadow-2xl">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-[#141920] border-t border-border flex items-center justify-around px-1 py-2 z-50 shadow-2xl">
         {navItems.map((item) => {
           const isActive = location === item.href;
           return (
             <Link key={item.href} href={item.href}>
               <div
                 data-testid={`mobile-nav-${item.name.toLowerCase()}`}
-                className={`flex flex-col items-center gap-1 p-2 rounded-lg ${
+                className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg ${
                   isActive ? "text-primary" : "text-muted-foreground"
                 }`}
               >
-                <item.icon className="w-6 h-6" />
-                <span className="text-[10px] font-medium uppercase tracking-wider">{item.name}</span>
+                <item.icon className="w-5 h-5" />
+                <span className="text-[9px] font-bold uppercase tracking-wider">{item.name}</span>
               </div>
             </Link>
           );
@@ -83,10 +84,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <button
           onClick={logout}
           data-testid="mobile-button-logout"
-          className="flex flex-col items-center gap-1 p-2 rounded-lg text-muted-foreground"
+          className="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-muted-foreground"
         >
-          <LogOut className="w-6 h-6" />
-          <span className="text-[10px] font-medium uppercase tracking-wider">Logout</span>
+          <LogOut className="w-5 h-5" />
+          <span className="text-[9px] font-bold uppercase tracking-wider">Out</span>
         </button>
       </nav>
     </div>

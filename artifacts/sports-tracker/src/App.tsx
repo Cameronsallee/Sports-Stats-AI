@@ -11,6 +11,7 @@ import Register from "@/pages/register";
 import Dashboard from "@/pages/dashboard";
 import Bets from "@/pages/bets";
 import Insights from "@/pages/insights";
+import Analytics from "@/pages/analytics";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +49,9 @@ function Router() {
       </Route>
       <Route path="/insights">
         <ProtectedRoute component={Insights} />
+      </Route>
+      <Route path="/analytics">
+        <ProtectedRoute component={Analytics} />
       </Route>
       <Route component={NotFound} />
     </Switch>

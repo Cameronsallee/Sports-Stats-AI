@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
+import { computeEdgeScore, type EdgeGrade } from "@/lib/analytics";
 import {
   loadPreviousSnapshot,
   saveSnapshot,
@@ -286,6 +287,20 @@ export default function Dashboard() {
   );
   const progression = getProgression(compositeScore);
 
+  /* Edge Score — computed from all bets */
+  const edgeScore = recentBets && totalBets >= 3
+    ? computeEdgeScore(recentBets)
+    : null;
+
+  const EDGE_GRADE_STYLE: Record<EdgeGrade, string> = {
+    S: "text-success border-success/25 bg-success/10",
+    A: "text-success border-success/20 bg-success/[0.07]",
+    B: "text-yellow-400 border-yellow-400/20 bg-yellow-400/[0.07]",
+    C: "text-yellow-400 border-yellow-400/20 bg-yellow-400/[0.07]",
+    D: "text-orange-400 border-orange-400/20 bg-orange-400/[0.07]",
+    F: "text-loss border-loss/20 bg-loss/[0.07]",
+  };
+
   return (
     <div className="p-6 md:p-8 space-y-6 max-w-7xl mx-auto">
 
@@ -469,6 +484,36 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </div>
+
+      {/* ── Edge Score teaser ─────────────────────────────────────── */}
+      {edgeScore && (
+        <Link href="/analytics">
+          <div className="flex items-center justify-between px-5 py-4 bg-card border border-card-border rounded-[14px] hover:border-primary/20 transition-all cursor-pointer group">
+            <div className="flex items-center gap-4">
+              <div className={`w-14 h-14 rounded-[10px] border flex flex-col items-center justify-center shrink-0 ${EDGE_GRADE_STYLE[edgeScore.grade]}`}>
+                <span className="text-2xl font-black leading-none">{edgeScore.grade}</span>
+                <span className="text-[8px] font-bold uppercase tracking-wider opacity-70 mt-0.5">Grade</span>
+              </div>
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Edge Score</p>
+                  <span className="text-[10px] font-black font-mono text-white">{edgeScore.score} / 100</span>
+                </div>
+                <div className="w-40 h-1.5 bg-white/[0.05] rounded-full overflow-hidden">
+                  <div
+                    className={`h-full rounded-full ${edgeScore.score >= 55 ? "bg-success" : edgeScore.score >= 40 ? "bg-yellow-400" : "bg-loss"}`}
+                    style={{ width: `${edgeScore.score}%` }}
+                  />
+                </div>
+                <p className="text-[9px] text-muted-foreground mt-1.5 uppercase tracking-wider">
+                  ROI {edgeScore.components.roi}/35 · Win Rate {edgeScore.components.winRate}/25 · Discipline {edgeScore.components.discipline}/25 · Patterns {edgeScore.components.patterns}/15
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0" />
+          </div>
+        </Link>
+      )}
 
       {/* ── Progression bar ───────────────────────────────────────── */}
       {totalBets >= 3 && (

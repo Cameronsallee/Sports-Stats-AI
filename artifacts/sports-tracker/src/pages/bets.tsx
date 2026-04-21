@@ -9,6 +9,7 @@ import {
   useCreateBet, 
   useUpdateBet, 
   useDeleteBet,
+  useGetStats,
   getListBetsQueryKey,
   getGetStatsQueryKey,
   getGetBankrollQueryKey
@@ -41,8 +42,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Trash2, Edit2, Plus, FilterX, ChevronDown, ChevronUp } from "lucide-react";
+import {
+  Trash2, Edit2, Plus, FilterX, ChevronDown, ChevronUp,
+  AlertTriangle, CheckCircle2, TrendingUp, Clock, Layers, X
+} from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
+import { getPostBetContext, type PostBetContext } from "@/lib/analytics";
 
 const SPORTS = ["Football", "Basketball", "Baseball", "Soccer", "Hockey", "Tennis", "MMA", "Boxing", "Golf", "Other"];
 const BET_TYPES = ["Moneyline", "Spread", "Over/Under", "Parlay", "Prop", "Futures", "Other"];
@@ -58,6 +63,132 @@ const betSchema = z.object({
   notes: z.string().optional(),
 });
 
+/* ─── Post-bet insight panel ───────────────────────────────────── */
+function PostBetInsightPanel({
+  context,
+  teams,
+  onClose,
+}: {
+  context: PostBetContext;
+  teams: string;
+  onClose: () => void;
+}) {
+  const hasWarnings = context.warningMessages.length > 0;
+  const hasPositives = context.positiveMessages.length > 0;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      <div className="relative w-full max-w-md bg-card border border-card-border rounded-[18px] shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 duration-300">
+        {/* Header */}
+        <div className="px-5 pt-5 pb-4 border-b border-white/[0.06] flex items-start justify-between gap-3">
+          <div>
+            <p className="text-[9px] font-black uppercase tracking-widest text-primary mb-1">
+              Bet Logged
+            </p>
+            <h3 className="font-bold text-white text-sm leading-tight">{teams}</h3>
+            <p className="text-[10px] text-muted-foreground mt-0.5 uppercase tracking-wider">
+              Context Analysis · {context.timeBucket}
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-muted-foreground hover:text-white transition-colors mt-0.5"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        <div className="p-5 space-y-4">
+          {/* Context stats */}
+          <div className="grid grid-cols-2 gap-3">
+            {context.timeROI !== null && (
+              <div className="bg-black/20 border border-white/[0.04] rounded-[10px] p-3">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <Clock className="w-3 h-3 text-muted-foreground" />
+                  <p className="text-[9px] text-muted-foreground uppercase tracking-wider font-bold">
+                    This Time Window
+                  </p>
+                </div>
+                <p className={`text-lg font-black font-mono ${context.timeROI > 0 ? "text-success" : "text-loss"}`}>
+                  {context.timeROI > 0 ? "+" : ""}{context.timeROI.toFixed(1)}%
+                </p>
+                <p className="text-[9px] text-muted-foreground">ROI · {context.timeWR?.toFixed(0)}% WR</p>
+              </div>
+            )}
+            {context.betTypeROI !== null && (
+              <div className="bg-black/20 border border-white/[0.04] rounded-[10px] p-3">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <Layers className="w-3 h-3 text-muted-foreground" />
+                  <p className="text-[9px] text-muted-foreground uppercase tracking-wider font-bold">
+                    This Bet Type
+                  </p>
+                </div>
+                <p className={`text-lg font-black font-mono ${context.betTypeROI > 0 ? "text-success" : "text-loss"}`}>
+                  {context.betTypeROI > 0 ? "+" : ""}{context.betTypeROI.toFixed(1)}%
+                </p>
+                <p className="text-[9px] text-muted-foreground">ROI · {context.betTypeWR?.toFixed(0)}% WR</p>
+              </div>
+            )}
+          </div>
+
+          {/* Warnings */}
+          {hasWarnings && (
+            <div className="space-y-2">
+              {context.warningMessages.map((msg, i) => (
+                <div
+                  key={i}
+                  className="flex items-start gap-2.5 p-3 bg-loss/[0.06] border border-loss/20 rounded-[10px]"
+                >
+                  <AlertTriangle className="w-3.5 h-3.5 text-loss shrink-0 mt-0.5" />
+                  <p className="text-xs text-white/80 leading-relaxed">{msg}</p>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Positives */}
+          {hasPositives && (
+            <div className="space-y-2">
+              {context.positiveMessages.map((msg, i) => (
+                <div
+                  key={i}
+                  className="flex items-start gap-2.5 p-3 bg-success/[0.06] border border-success/20 rounded-[10px]"
+                >
+                  <CheckCircle2 className="w-3.5 h-3.5 text-success shrink-0 mt-0.5" />
+                  <p className="text-xs text-white/80 leading-relaxed">{msg}</p>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* No context yet */}
+          {context.timeROI === null && context.betTypeROI === null && !hasWarnings && !hasPositives && (
+            <div className="text-center py-2">
+              <TrendingUp className="w-7 h-7 text-muted-foreground/30 mx-auto mb-2" />
+              <p className="text-xs text-muted-foreground">
+                Log more bets to unlock pattern-based context for your plays.
+              </p>
+            </div>
+          )}
+
+          <Button
+            onClick={onClose}
+            className="w-full h-10 bg-primary text-black font-bold uppercase tracking-widest text-xs rounded-[10px] hover:bg-primary/90 mt-2"
+          >
+            Got It
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Main component ───────────────────────────────────────────── */
 export default function Bets() {
   const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
@@ -67,6 +198,7 @@ export default function Bets() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingBet, setEditingBet] = useState<any>(null);
   const [showNotes, setShowNotes] = useState(false);
+  const [postBetCtx, setPostBetCtx] = useState<{ context: PostBetContext; teams: string } | null>(null);
 
   const queryParams: any = {};
   if (filterSport !== "all") queryParams.sport = filterSport;
@@ -77,6 +209,15 @@ export default function Bets() {
       enabled: isAuthenticated,
       queryKey: getListBetsQueryKey(queryParams)
     }
+  });
+
+  // All bets (no filter) for analytics context
+  const { data: allBets } = useListBets(undefined, {
+    query: { enabled: isAuthenticated }
+  });
+
+  const { data: stats } = useGetStats({
+    query: { enabled: isAuthenticated, queryKey: getGetStatsQueryKey() }
   });
 
   const createBet = useCreateBet();
@@ -121,10 +262,23 @@ export default function Bets() {
         { data: values },
         {
           onSuccess: () => {
-            toast({ title: "Bet logged" });
             setIsCreateOpen(false);
             form.reset();
             invalidateQueries();
+
+            // Compute post-bet context from historical data
+            const historical = allBets ?? [];
+            const recentStreak = stats?.recentStreak ?? 0;
+            const context = getPostBetContext(
+              historical,
+              {
+                betType: values.betType,
+                odds: values.odds,
+                createdAt: new Date().toISOString(),
+              },
+              recentStreak,
+            );
+            setPostBetCtx({ context, teams: values.teams });
           }
         }
       );
@@ -149,6 +303,16 @@ export default function Bets() {
 
   return (
     <div className="p-6 md:p-8 space-y-6 max-w-7xl mx-auto">
+
+      {/* Post-bet insight overlay */}
+      {postBetCtx && (
+        <PostBetInsightPanel
+          context={postBetCtx.context}
+          teams={postBetCtx.teams}
+          onClose={() => setPostBetCtx(null)}
+        />
+      )}
+
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
           <h1 className="text-3xl font-bold tracking-widest uppercase text-white">Bet Ledger</h1>
@@ -193,7 +357,10 @@ export default function Bets() {
             setIsCreateOpen(open);
           }}>
             <DialogTrigger asChild>
-              <Button className="ml-auto bg-primary text-black hover:bg-primary/90 font-bold uppercase tracking-wider gap-2 h-10 rounded-[10px] px-6 shadow-[0_0_15px_rgba(45,255,136,0.15)]">
+              <Button
+                data-testid="button-log-bet"
+                className="ml-auto bg-primary text-black hover:bg-primary/90 font-bold uppercase tracking-wider gap-2 h-10 rounded-[10px] px-6 shadow-[0_0_15px_rgba(45,255,136,0.15)]"
+              >
                 <Plus className="w-4 h-4" /> Log Bet
               </Button>
             </DialogTrigger>
