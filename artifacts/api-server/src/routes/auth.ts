@@ -4,10 +4,14 @@ import { db, usersTable, bankrollTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
 import { RegisterBody, LoginBody } from "@workspace/api-zod";
 import { authMiddleware, signToken, type AuthRequest } from "../middlewares/auth";
+import { rateLimit } from "../middlewares/rate-limit";
 
 const router = Router();
 
-router.post("/register", async (req, res) => {
+const registerLimiter = rateLimit({ windowMs: 60 * 60_000, max: 10, keyPrefix: "register" });
+const loginLimiter = rateLimit({ windowMs: 15 * 60_000, max: 10, keyPrefix: "login" });
+
+router.post("/register", registerLimiter, async (req, res) => {
   const parsed = RegisterBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: "Invalid input" });
@@ -28,10 +32,11 @@ router.post("/register", async (req, res) => {
   }
 
   const passwordHash = await bcrypt.hash(password, 10);
+  const trialEndsAt = new Date(Date.now() + 7 * 24 * 60 * 60_000);
 
   const [user] = await db
     .insert(usersTable)
-    .values({ email: email.toLowerCase(), passwordHash })
+    .values({ email: email.toLowerCase(), passwordHash, trialEndsAt })
     .returning();
 
   await db
@@ -43,7 +48,7 @@ router.post("/register", async (req, res) => {
   res.status(201).json({ token, user: { id: user.id, email: user.email } });
 });
 
-router.post("/login", async (req, res) => {
+router.post("/login", loginLimiter, async (req, res) => {
   const parsed = LoginBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: "Invalid input" });
@@ -88,7 +93,19 @@ router.get("/me", authMiddleware, async (req: AuthRequest, res) => {
     return;
   }
 
-  res.json({ id: user.id, email: user.email });
+  const now = new Date();
+  const onTrial = user.trialEndsAt ? user.trialEndsAt > now : false;
+  const tier = user.subscriptionTier === "pro" || onTrial ? "pro" : "free";
+
+  res.json({
+    id: user.id,
+    email: user.email,
+    tier,
+    subscriptionStatus: user.subscriptionStatus,
+    onTrial,
+    trialEndsAt: user.trialEndsAt,
+    emailVerified: user.emailVerified,
+  });
 });
 
 export default router;

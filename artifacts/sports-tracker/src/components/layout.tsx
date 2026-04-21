@@ -1,6 +1,7 @@
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/lib/auth";
-import { BarChart3, LayoutDashboard, ListPlus, LogOut, BrainCircuit, TrendingUp } from "lucide-react";
+import { BarChart3, LayoutDashboard, ListPlus, LogOut, BrainCircuit, TrendingUp, Settings } from "lucide-react";
+import { TrialBanner } from "@/lib/subscription";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
@@ -11,6 +12,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     { name: "Bets", href: "/bets", icon: ListPlus },
     { name: "Analytics", href: "/analytics", icon: TrendingUp },
     { name: "Coach", href: "/insights", icon: BrainCircuit },
+    { name: "Settings", href: "/settings", icon: Settings },
   ];
 
   return (
@@ -60,6 +62,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
       {/* Main Content */}
       <main className="flex-1 overflow-auto pb-20 md:pb-0 relative">
+        <TrialBanner />
         {children}
       </main>
 
