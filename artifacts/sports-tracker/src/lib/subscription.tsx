@@ -1,19 +1,57 @@
 import { useQuery } from "@tanstack/react-query";
-import { getSubscription, type SubscriptionInfo } from "./api";
 import { useAuth } from "./auth";
 import { Link } from "wouter";
 import { Lock, Sparkles } from "lucide-react";
 
+export type SubscriptionInfo = {
+  tier: "free" | "pro";
+  onTrial: boolean;
+  trialEndsAt: string | null;
+};
+
+/**
+ * Fetch subscription status from backend
+ */
+async function fetchSubscription(): Promise<SubscriptionInfo> {
+  const token =
+    typeof window !== "undefined"
+      ? localStorage.getItem("betpulse_token")
+      : null;
+
+  const res = await fetch("/api/subscription", {
+    headers: {
+      Authorization: token ? `Bearer ${token}` : "",
+    },
+  });
+
+  if (!res.ok) {
+    return {
+      tier: "free",
+      onTrial: false,
+      trialEndsAt: null,
+    };
+  }
+
+  return res.json();
+}
+
+/**
+ * Subscription hook
+ */
 export function useSubscription() {
   const { isAuthenticated } = useAuth();
+
   return useQuery<SubscriptionInfo>({
     queryKey: ["subscription"],
-    queryFn: getSubscription,
+    queryFn: fetchSubscription,
     enabled: isAuthenticated,
     staleTime: 60_000,
   });
 }
 
+/**
+ * Pro feature gate
+ */
 export function ProGate({
   children,
   feature,
@@ -31,9 +69,9 @@ export function ProGate({
     );
   }
 
-  if (data?.tier === "pro") {
-    return <>{children}</>;
-  }
+  const isPro = data?.tier === "pro";
+
+  if (isPro) return <>{children}</>;
 
   return (
     <div className="max-w-2xl mx-auto p-8">
@@ -41,18 +79,17 @@ export function ProGate({
         <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
           <Lock className="w-8 h-8 text-primary" />
         </div>
+
         <h2 className="text-2xl font-bold uppercase tracking-wider text-foreground mb-3">
           {feature} is a Pro feature
         </h2>
+
         <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-          Unlock the full BetPulse intelligence engine — AI Coach, behavioral analytics,
-          edge score, and monthly performance reports.
+          Unlock AI Coach, behavioral analytics, Edge Score, and advanced betting intelligence.
         </p>
+
         <Link href="/pricing">
-          <button
-            data-testid="button-upgrade"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-[#0B0F14] font-bold uppercase tracking-wider rounded-lg hover:bg-primary/90 transition-colors"
-          >
+          <button className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-[#0B0F14] font-bold uppercase tracking-wider rounded-lg hover:bg-primary/90 transition-colors">
             <Sparkles className="w-4 h-4" />
             Upgrade to Pro
           </button>
@@ -62,13 +99,20 @@ export function ProGate({
   );
 }
 
+/**
+ * Trial banner
+ */
 export function TrialBanner() {
   const { data } = useSubscription();
-  if (!data || !data.onTrial || !data.trialEndsAt) return null;
+
+  if (!data?.onTrial || !data?.trialEndsAt) return null;
 
   const daysLeft = Math.max(
     0,
-    Math.ceil((new Date(data.trialEndsAt).getTime() - Date.now()) / (24 * 60 * 60_000)),
+    Math.ceil(
+      (new Date(data.trialEndsAt).getTime() - Date.now()) /
+        (24 * 60 * 60 * 1000)
+    )
   );
 
   return (
@@ -76,11 +120,9 @@ export function TrialBanner() {
       <span className="text-primary font-bold uppercase tracking-wider">
         Pro Trial — {daysLeft} {daysLeft === 1 ? "day" : "days"} left
       </span>
+
       <Link href="/pricing">
-        <button
-          data-testid="button-trial-upgrade"
-          className="ml-3 text-primary underline hover:opacity-80"
-        >
+        <button className="ml-3 text-primary underline hover:opacity-80">
           Upgrade now
         </button>
       </Link>
